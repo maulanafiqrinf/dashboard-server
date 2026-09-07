@@ -3,56 +3,82 @@ import { Monitor, Incident, SystemStats, CheckHistoryItem } from "@/types/monito
 import { runMonitorCheck } from "./checker";
 import fs from "fs";
 import path from "path";
+import os from "os";
 
 const MONITORS_COLLECTION = "monitors";
 const INCIDENTS_COLLECTION = "incidents";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DATA_DIR = isServerless ? path.join(os.tmpdir(), "dashboard-data") : path.join(process.cwd(), "data");
 const LOCAL_MONITORS_FILE = path.join(DATA_DIR, "monitors.json");
 const LOCAL_INCIDENTS_FILE = path.join(DATA_DIR, "incidents.json");
 
 let firestoreAvailable: boolean | null = null;
+let inMemoryMonitors: Monitor[] = [];
+let inMemoryIncidents: Incident[] = [];
 
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch {
+    // Ignore read-only errors on serverless
   }
 }
 
 function readLocalMonitors(): Monitor[] {
-  ensureDataDir();
-  if (!fs.existsSync(LOCAL_MONITORS_FILE)) {
-    return [];
+  if (inMemoryMonitors.length > 0) {
+    return inMemoryMonitors;
   }
   try {
-    const raw = fs.readFileSync(LOCAL_MONITORS_FILE, "utf-8");
-    return JSON.parse(raw);
+    ensureDataDir();
+    if (fs.existsSync(LOCAL_MONITORS_FILE)) {
+      const raw = fs.readFileSync(LOCAL_MONITORS_FILE, "utf-8");
+      inMemoryMonitors = JSON.parse(raw);
+      return inMemoryMonitors;
+    }
   } catch {
-    return [];
+    // Fall back to inMemory
   }
+  return inMemoryMonitors;
 }
 
 function writeLocalMonitors(monitors: Monitor[]) {
-  ensureDataDir();
-  fs.writeFileSync(LOCAL_MONITORS_FILE, JSON.stringify(monitors, null, 2), "utf-8");
+  inMemoryMonitors = monitors;
+  try {
+    ensureDataDir();
+    fs.writeFileSync(LOCAL_MONITORS_FILE, JSON.stringify(monitors, null, 2), "utf-8");
+  } catch {
+    // Read-only filesystem on Vercel, inMemoryMonitors is used safely
+  }
 }
 
 function readLocalIncidents(): Incident[] {
-  ensureDataDir();
-  if (!fs.existsSync(LOCAL_INCIDENTS_FILE)) {
-    return [];
+  if (inMemoryIncidents.length > 0) {
+    return inMemoryIncidents;
   }
   try {
-    const raw = fs.readFileSync(LOCAL_INCIDENTS_FILE, "utf-8");
-    return JSON.parse(raw);
+    ensureDataDir();
+    if (fs.existsSync(LOCAL_INCIDENTS_FILE)) {
+      const raw = fs.readFileSync(LOCAL_INCIDENTS_FILE, "utf-8");
+      inMemoryIncidents = JSON.parse(raw);
+      return inMemoryIncidents;
+    }
   } catch {
-    return [];
+    // Fall back
   }
+  return inMemoryIncidents;
 }
 
 function writeLocalIncidents(incidents: Incident[]) {
-  ensureDataDir();
-  fs.writeFileSync(LOCAL_INCIDENTS_FILE, JSON.stringify(incidents, null, 2), "utf-8");
+  inMemoryIncidents = incidents;
+  try {
+    ensureDataDir();
+    fs.writeFileSync(LOCAL_INCIDENTS_FILE, JSON.stringify(incidents, null, 2), "utf-8");
+  } catch {
+    // Read-only filesystem on Vercel, inMemoryIncidents is used safely
+  }
 }
 
 const INITIAL_MONITORS: Omit<Monitor, "id">[] = [
