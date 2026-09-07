@@ -34,7 +34,7 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
       if (!isAuthorizedEmail(email)) {
         await signOut(auth);
         setErrorMsg(
-          `Akses Ditolak: Akun Google (${email}) tidak memiliki hak akses. Hanya akun terdaftar (fiqrin1805@gmail.com dan hasan@kwsg.co.id) yang dapat mengakses dan mengelola sistem ini.`
+          `Akses Ditolak: Akun Google (${email}) tidak memiliki hak akses. Hanya akun terdaftar (${ALLOWED_EMAILS.join(" dan ")}) yang dapat mengakses dan mengelola sistem ini.`
         );
         return;
       }
@@ -73,7 +73,7 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
 
   const handleBypassAuth = (email: string) => {
     if (!isAuthorizedEmail(email)) return;
-    const name = email.startsWith("fiqri") ? "Fiqri Kurniawan" : "Hasan KWSG";
+    const name = email.startsWith("fiqri") ? "Fiqri Kurniawan" : "Hasan";
     onLoginSuccess({
       email,
       displayName: name,

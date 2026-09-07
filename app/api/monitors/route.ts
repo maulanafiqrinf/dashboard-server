@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllMonitors, createMonitor, calculateStats } from "@/lib/monitors-service";
-import { isAuthorizedEmail } from "@/lib/auth-config";
+import { isAuthorizedEmail, ALLOWED_EMAILS } from "@/lib/auth-config";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { 
           success: false, 
-          error: "Unauthorized: Hanya akun terotorisasi (fiqrin1805@gmail.com dan hasan@kwsg.co.id) yang dapat menambah target monitor." 
+          error: `Unauthorized: Hanya akun terotorisasi (${ALLOWED_EMAILS.join(" dan ")}) yang dapat menambah target monitor.` 
         },
         { status: 403 }
       );

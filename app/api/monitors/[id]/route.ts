@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMonitorById, updateMonitor, deleteMonitor } from "@/lib/monitors-service";
-import { isAuthorizedEmail } from "@/lib/auth-config";
+import { isAuthorizedEmail, ALLOWED_EMAILS } from "@/lib/auth-config";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +31,7 @@ export async function PATCH(
       return NextResponse.json(
         { 
           success: false, 
-          error: "Unauthorized: Hanya akun terotorisasi (fiqrin1805@gmail.com dan hasan@kwsg.co.id) yang dapat mengubah data monitor." 
+          error: `Unauthorized: Hanya akun terotorisasi (${ALLOWED_EMAILS.join(" dan ")}) yang dapat mengubah data monitor.` 
         },
         { status: 403 }
       );
@@ -60,7 +60,7 @@ export async function DELETE(
       return NextResponse.json(
         { 
           success: false, 
-          error: "Unauthorized: Hanya akun terotorisasi (fiqrin1805@gmail.com dan hasan@kwsg.co.id) yang dapat menghapus data monitor." 
+          error: `Unauthorized: Hanya akun terotorisasi (${ALLOWED_EMAILS.join(" dan ")}) yang dapat menghapus data monitor.` 
         },
         { status: 403 }
       );

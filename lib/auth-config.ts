@@ -1,6 +1,6 @@
 export const ALLOWED_EMAILS = [
   "fiqrin1805@gmail.com",
-  "hasan@kwsg.co.id",
+  "ahasanch@gmail.com",
 ];
 
 export function isAuthorizedEmail(email?: string | null): boolean {
