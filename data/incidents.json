@@ -1,0 +1,78 @@
+[
+  {
+    "id": "inc_1788770909015",
+    "monitorId": "mon_1788769706185",
+    "monitorName": "Production Web Portal (HTTP/S)",
+    "startedAt": "2026-09-07T08:48:28.958Z",
+    "cause": "Request timed out after 5000ms",
+    "status": "ongoing"
+  },
+  {
+    "id": "inc_1788770908953",
+    "monitorId": "mon_1788769597548",
+    "monitorName": "Production Web Portal (HTTP/S)",
+    "startedAt": "2026-09-07T08:48:28.944Z",
+    "cause": "Request timed out after 5000ms",
+    "status": "ongoing"
+  },
+  {
+    "id": "inc_1788769970982",
+    "monitorId": "mon_1788769961196",
+    "monitorName": "Production Web Portal (HTTP/S)",
+    "startedAt": "2026-09-07T08:32:50.981Z",
+    "cause": "Request timed out after 5000ms",
+    "status": "ongoing"
+  },
+  {
+    "id": "inc_1788769968783",
+    "monitorId": "mon_1788769961196",
+    "monitorName": "Production Web Portal (HTTP/S)",
+    "startedAt": "2026-09-07T08:32:48.775Z",
+    "cause": "Request timed out after 5000ms",
+    "status": "ongoing"
+  },
+  {
+    "id": "inc_1788769968772",
+    "monitorId": "mon_1788769706185",
+    "monitorName": "Production Web Portal (HTTP/S)",
+    "startedAt": "2026-09-07T08:32:48.761Z",
+    "cause": "Request timed out after 5000ms",
+    "status": "resolved",
+    "resolvedAt": "2026-09-07T08:33:14.217Z",
+    "durationSeconds": 25
+  },
+  {
+    "id": "inc_1788769968759",
+    "monitorId": "mon_1788769597548",
+    "monitorName": "Production Web Portal (HTTP/S)",
+    "startedAt": "2026-09-07T08:32:48.758Z",
+    "cause": "Request timed out after 5000ms",
+    "status": "resolved",
+    "resolvedAt": "2026-09-07T08:33:14.307Z",
+    "durationSeconds": 26
+  },
+  {
+    "id": "inc_1788769966238",
+    "monitorId": "mon_1788769961196",
+    "monitorName": "Production Web Portal (HTTP/S)",
+    "startedAt": "2026-09-07T08:32:46.237Z",
+    "cause": "Request timed out after 5000ms",
+    "status": "ongoing"
+  },
+  {
+    "id": "inc_1788769098620",
+    "monitorId": "mon_1788769082745",
+    "monitorName": "Redis Cache Server",
+    "startedAt": "2026-09-07T08:18:18.619Z",
+    "cause": "Redis service not reachable on 127.0.0.1:6379 (Connection Refused)",
+    "status": "ongoing"
+  },
+  {
+    "id": "inc_1788769027881",
+    "monitorId": "mon_1788769015847_5",
+    "monitorName": "Simulasi Server Mati (Port Tertutup)",
+    "startedAt": "2026-09-07T08:17:07.880Z",
+    "cause": "Connection refused on port 19876. The service may not be running.",
+    "status": "ongoing"
+  }
+]

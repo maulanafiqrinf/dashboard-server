@@ -1,0 +1,264 @@
+[
+  {
+    "name": "Production Web Portal (HTTP/S)",
+    "type": "http",
+    "category": "web",
+    "target": "wms.sic.co.id/assistantAPP",
+    "method": "GET",
+    "expectedStatusCode": 200,
+    "timeout": 5000,
+    "checkInterval": 60,
+    "active": true,
+    "history": [
+      {
+        "timestamp": "2026-09-07T08:26:38.382Z",
+        "status": "operational",
+        "latency": 808,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:27:58.416Z",
+        "status": "degraded",
+        "latency": 2686,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:28:47.981Z",
+        "status": "operational",
+        "latency": 582,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:29:00.448Z",
+        "status": "operational",
+        "latency": 623,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:30:00.465Z",
+        "status": "operational",
+        "latency": 630,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:31:01.429Z",
+        "status": "operational",
+        "latency": 1611,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:32:15.106Z",
+        "status": "operational",
+        "latency": 823,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:32:48.758Z",
+        "status": "down",
+        "latency": 5012,
+        "error": "Request timed out after 5000ms"
+      },
+      {
+        "timestamp": "2026-09-07T08:33:14.307Z",
+        "status": "operational",
+        "latency": 563,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:34:17.889Z",
+        "status": "operational",
+        "latency": 579,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:48:28.944Z",
+        "status": "down",
+        "latency": 5024,
+        "error": "Request timed out after 5000ms"
+      },
+      {
+        "timestamp": "2026-09-07T08:48:35.002Z",
+        "status": "down",
+        "latency": 4261,
+        "error": "fetch failed"
+      },
+      {
+        "timestamp": "2026-09-07T08:49:03.918Z",
+        "status": "down",
+        "latency": 7,
+        "error": "fetch failed"
+      },
+      {
+        "timestamp": "2026-09-07T08:49:28.301Z",
+        "status": "down",
+        "latency": 6,
+        "error": "fetch failed"
+      }
+    ],
+    "id": "mon_1788769597548",
+    "status": "down",
+    "latency": 6,
+    "createdAt": "2026-09-07T08:26:37.534Z",
+    "updatedAt": "2026-09-07T08:49:28.301Z",
+    "lastChecked": "2026-09-07T08:49:28.301Z",
+    "uptimePercentage": 64.3,
+    "lastError": "fetch failed"
+  },
+  {
+    "name": "Production Web Portal (HTTP/S)",
+    "type": "http",
+    "category": "web",
+    "target": "https://order-app.sic.co.id/",
+    "method": "GET",
+    "expectedStatusCode": 200,
+    "timeout": 5000,
+    "checkInterval": 60,
+    "active": true,
+    "history": [
+      {
+        "timestamp": "2026-09-07T08:28:27.379Z",
+        "status": "operational",
+        "latency": 1151,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:28:47.874Z",
+        "status": "operational",
+        "latency": 470,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:29:00.351Z",
+        "status": "operational",
+        "latency": 524,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:30:01.159Z",
+        "status": "operational",
+        "latency": 1322,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:31:00.916Z",
+        "status": "operational",
+        "latency": 1096,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:32:15.076Z",
+        "status": "operational",
+        "latency": 791,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:32:48.761Z",
+        "status": "down",
+        "latency": 5014,
+        "error": "Request timed out after 5000ms"
+      },
+      {
+        "timestamp": "2026-09-07T08:33:14.217Z",
+        "status": "operational",
+        "latency": 472,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:34:18.515Z",
+        "status": "operational",
+        "latency": 1203,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:48:28.958Z",
+        "status": "down",
+        "latency": 5025,
+        "error": "Request timed out after 5000ms"
+      },
+      {
+        "timestamp": "2026-09-07T08:48:35.006Z",
+        "status": "down",
+        "latency": 4263,
+        "error": "fetch failed"
+      },
+      {
+        "timestamp": "2026-09-07T08:49:03.920Z",
+        "status": "down",
+        "latency": 5,
+        "error": "fetch failed"
+      },
+      {
+        "timestamp": "2026-09-07T08:49:28.303Z",
+        "status": "down",
+        "latency": 5,
+        "error": "fetch failed"
+      }
+    ],
+    "id": "mon_1788769706185",
+    "status": "down",
+    "latency": 5,
+    "createdAt": "2026-09-07T08:28:26.183Z",
+    "updatedAt": "2026-09-07T08:49:28.303Z",
+    "lastChecked": "2026-09-07T08:49:28.303Z",
+    "uptimePercentage": 61.5,
+    "lastError": "fetch failed"
+  },
+  {
+    "name": "Web Portal Semen Indonesia Cooperative",
+    "type": "http",
+    "category": "web",
+    "target": "https://order-app.sic.co.id/",
+    "method": "GET",
+    "expectedStatusCode": 200,
+    "timeout": 5000,
+    "checkInterval": 1800,
+    "active": true,
+    "history": [
+      {
+        "timestamp": "2026-09-07T08:58:07.426Z",
+        "status": "operational",
+        "latency": 559,
+        "statusCode": 200
+      }
+    ],
+    "id": "mon_1788771483926",
+    "status": "operational",
+    "latency": 559,
+    "createdAt": "2026-09-07T08:58:02.237Z",
+    "updatedAt": "2026-09-07T08:58:07.426Z",
+    "lastChecked": "2026-09-07T08:58:07.426Z",
+    "uptimePercentage": 100
+  },
+  {
+    "name": "Web Portal Semen Indonesia Cooperative",
+    "type": "http",
+    "category": "web",
+    "target": "https://order-app.sic.co.id/",
+    "method": "GET",
+    "expectedStatusCode": 200,
+    "timeout": 5000,
+    "checkInterval": 1800,
+    "active": true,
+    "history": [
+      {
+        "timestamp": "2026-09-07T08:58:39.670Z",
+        "status": "operational",
+        "latency": 543,
+        "statusCode": 200
+      },
+      {
+        "timestamp": "2026-09-07T08:58:42.034Z",
+        "status": "operational",
+        "latency": 209,
+        "statusCode": 200
+      }
+    ],
+    "id": "mon_1788771519025",
+    "status": "operational",
+    "latency": 209,
+    "createdAt": "2026-09-07T08:58:38.989Z",
+    "updatedAt": "2026-09-07T08:58:42.034Z",
+    "lastChecked": "2026-09-07T08:58:42.034Z",
+    "uptimePercentage": 100
+  }
+]
