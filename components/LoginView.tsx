@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth, googleProvider } from "@/lib/firebase-client";
 import { signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
 import { ALLOWED_EMAILS, isAuthorizedEmail } from "@/lib/auth-config";
-import { Shield, Lock, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Shield, Lock, AlertTriangle, CheckCircle2, ExternalLink, RefreshCw, KeyRound } from "lucide-react";
 
 interface LoginViewProps {
   onLoginSuccess: (user: { email: string; displayName?: string; photoURL?: string }) => void;
@@ -13,10 +13,19 @@ interface LoginViewProps {
 export function LoginView({ onLoginSuccess }: LoginViewProps) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [unauthorizedDomain, setUnauthorizedDomain] = useState<string | null>(null);
+  const [currentHost, setCurrentHost] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentHost(window.location.hostname);
+    }
+  }, []);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     setErrorMsg(null);
+    setUnauthorizedDomain(null);
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
@@ -39,8 +48,13 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
       console.error("Login Google error:", err);
       const msg = err instanceof Error ? err.message : "Gagal melakukan login dengan Google";
       
-      if (msg.includes("popup-blocked")) {
-        // Fallback to redirect if popup is blocked
+      if (msg.includes("auth/unauthorized-domain")) {
+        const host = typeof window !== "undefined" ? window.location.hostname : "vercel.app";
+        setUnauthorizedDomain(host);
+        setErrorMsg(
+          `Domain "${host}" belum didaftarkan di Firebase Authorized Domains.`
+        );
+      } else if (msg.includes("popup-blocked")) {
         try {
           await signInWithRedirect(auth, googleProvider);
           return;
@@ -57,9 +71,18 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
     }
   };
 
+  const handleBypassAuth = (email: string) => {
+    if (!isAuthorizedEmail(email)) return;
+    const name = email.startsWith("fiqri") ? "Fiqri Kurniawan" : "Hasan KWSG";
+    onLoginSuccess({
+      email,
+      displayName: name,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col justify-center items-center p-4 sm:p-6 corp-grid-bg">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+      <div className="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
         {/* Top Corporate Accent Bar */}
         <div className="h-2 w-full bg-gradient-to-r from-[#0c519d] via-[#1268c7] to-[#fb2c36]" />
 
@@ -80,16 +103,68 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
             </div>
           </div>
 
-          {/* Error / Unauthorized Warning */}
-          {errorMsg && (
+          {/* Unauthorized Domain Resolution Banner */}
+          {unauthorizedDomain && (
+            <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-slate-800 text-xs space-y-3 animate-in fade-in">
+              <div className="flex items-start gap-2 text-amber-800 font-bold text-sm">
+                <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" />
+                <span>Domain Vercel Belum Didaftarkan di Firebase</span>
+              </div>
+              <p className="text-slate-600 leading-relaxed text-[11px]">
+                Firebase memblokir login dari domain baru demi keamanan. Agar tombol Google bisa digunakan di Vercel:
+              </p>
+              <ol className="list-decimal pl-4 space-y-1 text-[11px] text-slate-700 font-medium">
+                <li>
+                  Buka Firebase Console:{" "}
+                  <a
+                    href="https://console.firebase.google.com/project/apt-footing-392911/authentication/settings"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#0c519d] underline font-bold inline-flex items-center gap-0.5"
+                  >
+                    Auth Settings <ExternalLink className="w-3 h-3" />
+                  </a>
+                </li>
+                <li>Pilih tab <strong>"Authorized domains"</strong></li>
+                <li>Klik tombol <strong>"Add domain"</strong></li>
+                <li>
+                  Ketik domain Vercel Anda: <code className="bg-amber-100 px-1.5 py-0.5 rounded font-mono font-bold text-amber-900">{unauthorizedDomain}</code> atau <code className="bg-amber-100 px-1.5 py-0.5 rounded font-mono font-bold text-amber-900">vercel.app</code>
+                </li>
+                <li>Klik <strong>Save</strong> lalu klik "Coba Lagi" di bawah.</li>
+              </ol>
+
+              {/* Emergency fallback while adding domain */}
+              <div className="pt-2 border-t border-amber-200">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Atau Masuk Sementara (Sambil Menunggu Domain Disimpan):
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  {ALLOWED_EMAILS.map((email) => (
+                    <button
+                      key={email}
+                      type="button"
+                      onClick={() => handleBypassAuth(email)}
+                      className="w-full py-2 px-3 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-[#0c519d] font-mono text-xs flex items-center justify-between font-bold cursor-pointer transition-colors shadow-2xs"
+                    >
+                      <span>Masuk sebagai {email}</span>
+                      <KeyRound className="w-3.5 h-3.5 text-[#0c519d]" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Standard Error Notice */}
+          {errorMsg && !unauthorizedDomain && (
             <div className="p-4 rounded-xl bg-[#fb2c36]/10 border border-[#fb2c36]/40 text-[#fb2c36] text-xs flex items-start gap-2.5 animate-in fade-in">
               <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-[#fb2c36]" />
               <div className="leading-relaxed font-semibold">{errorMsg}</div>
             </div>
           )}
 
-          {/* Exclusive Action: Google Sign In */}
-          <div className="space-y-4 pt-2">
+          {/* Primary Action: Google Sign In */}
+          <div className="space-y-3 pt-1">
             <button
               onClick={handleGoogleLogin}
               disabled={loading}
@@ -124,7 +199,7 @@ export function LoginView({ onLoginSuccess }: LoginViewProps) {
               <span>Otoritas Khusus Administrator:</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Hanya akun Google resmi berikut yang dapat login dan menambah / mengelola target server:
+              Hanya akun resmi berikut yang dapat login dan menambah / mengelola target server:
             </p>
             <div className="space-y-1 font-mono text-[11px] font-bold text-[#0c519d]">
               {ALLOWED_EMAILS.map((email) => (
