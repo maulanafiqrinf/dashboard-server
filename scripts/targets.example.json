@@ -1,0 +1,38 @@
+[
+  {
+    "name": "HRD Online (Server 20)",
+    "target": "http://172.20.110.20/hrdonline",
+    "type": "http",
+    "category": "web",
+    "timeout": 5
+  },
+  {
+    "name": "Portal Intranet KWSG (Server 20)",
+    "target": "http://172.20.110.20",
+    "type": "http",
+    "category": "web",
+    "timeout": 5
+  },
+  {
+    "name": "Sistem Informasi Kepegawaian (Server 20)",
+    "target": "http://172.20.110.20/sipk",
+    "type": "http",
+    "category": "web",
+    "timeout": 5
+  },
+  {
+    "name": "Presensi & Absensi (Server 20)",
+    "target": "http://172.20.110.20/absensi",
+    "type": "http",
+    "category": "web",
+    "timeout": 5
+  },
+  {
+    "name": "Database MySQL Server 20 (Port 3306)",
+    "target": "172.20.110.20",
+    "port": 3306,
+    "type": "tcp",
+    "category": "database",
+    "timeout": 3
+  }
+]

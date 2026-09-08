@@ -57,19 +57,51 @@ export function IntranetAgentModal({
           "x-agent-secret": secretKey,
         },
         body: JSON.stringify({
-          target: "http://172.20.110.20/hrdonline",
-          name: "HRD Online Intranet (172.20.110.20)",
-          status: "operational",
-          latency: Math.floor(Math.random() * 30) + 25,
-          statusCode: 200,
-          category: "web",
-          type: "http",
+          secretKey,
+          reports: [
+            {
+              target: "http://172.20.110.20/hrdonline",
+              name: "HRD Online (Server 20)",
+              status: "operational",
+              latency: Math.floor(Math.random() * 20) + 25,
+              statusCode: 200,
+              category: "web",
+              type: "http",
+            },
+            {
+              target: "http://172.20.110.20",
+              name: "Portal Intranet KWSG (Server 20)",
+              status: "operational",
+              latency: Math.floor(Math.random() * 20) + 20,
+              statusCode: 200,
+              category: "web",
+              type: "http",
+            },
+            {
+              target: "http://172.20.110.20/sipk",
+              name: "Sistem Kepegawaian SIPK (Server 20)",
+              status: "operational",
+              latency: Math.floor(Math.random() * 25) + 30,
+              statusCode: 200,
+              category: "web",
+              type: "http",
+            },
+            {
+              target: "172.20.110.20",
+              port: 3306,
+              name: "MySQL Database Server 20 (Port 3306)",
+              status: "operational",
+              latency: Math.floor(Math.random() * 15) + 10,
+              category: "database",
+              type: "tcp",
+            },
+          ],
         }),
       });
 
       const data = await res.json();
       if (data.success) {
-        setSimulateMsg("Laporan heartbeat simulasi dari intranet berhasil diterima! Status diperbarui di dashboard.");
+        setSimulateMsg(`Berhasil! ${data.processed || 4} layanan di Server 172.20.110.20 berhasil disinkronkan & diperbarui di dashboard.`);
         if (onReportSimulated) onReportSimulated();
       } else {
         setSimulateMsg(`Gagal: ${data.error}`);
@@ -254,8 +286,27 @@ export function IntranetAgentModal({
             </div>
 
             <p className="text-[11px] text-slate-500 mt-2 italic">
-              File script lengkap siap pakai telah tersedia di folder proyek: <code className="font-bold text-slate-700 font-mono">scripts/agent-intranet.ps1</code> dan <code className="font-bold text-slate-700 font-mono">scripts/agent-intranet.py</code>.
+              File script lengkap siap pakai telah tersedia di folder proyek: <code className="font-bold text-slate-700 font-mono">scripts/agent-intranet.ps1</code>, <code className="font-bold text-slate-700 font-mono">scripts/agent-intranet.py</code>, dan contoh <code className="font-bold text-slate-700 font-mono">scripts/targets.example.json</code>.
             </p>
+          </div>
+
+          {/* Multi-Service on Server 172.20.110.20 Callout */}
+          <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 space-y-2 text-xs">
+            <div className="flex items-center gap-2 font-bold text-amber-900">
+              <Server className="w-4 h-4 text-amber-700" />
+              <span>Memantau Banyak Aplikasi di Server 172.20.110.20:</span>
+            </div>
+            <p className="text-[11px] text-amber-800 leading-relaxed">
+              Jika di server 20 terdapat banyak aplikasi (contoh: <code className="font-mono font-bold">/hrdonline</code>, <code className="font-mono font-bold">/sipk</code>, <code className="font-mono font-bold">/absensi</code>, port database <code className="font-mono font-bold">3306</code>):
+            </p>
+            <ul className="list-disc list-inside text-[11px] text-amber-900/90 space-y-1 pl-1">
+              <li>
+                <strong>Otomatis (Cloud Sync):</strong> Cukup klik <strong>&quot;Tambah Target&quot;</strong> di dashboard ini untuk tiap aplikasi. Script agent di kantor akan otomatis mengunduh daftar target tersebut dan memantaunya tanpa Anda perlu mengedit script di server.
+              </li>
+              <li>
+                <strong>File Lokal (targets.json):</strong> Anda juga bisa mendaftarkan daftar URL di file <code className="font-mono font-bold">scripts/targets.json</code> di komputer/server kantor.
+              </li>
+            </ul>
           </div>
 
           {/* Test Simulation Section */}
@@ -264,10 +315,10 @@ export function IntranetAgentModal({
               <div>
                 <h4 className="text-xs font-bold text-[#0c519d] flex items-center gap-1.5">
                   <Play className="w-3.5 h-3.5 fill-current" />
-                  Uji Coba Laporan Heartbeat Intranet Sekarang
+                  Uji Coba Laporan Multi-Layanan Server 20 Sekarang
                 </h4>
                 <p className="text-[11px] text-slate-600 mt-0.5">
-                  Klik tombol di samping untuk mensimulasikan pengiriman laporan dari intranet untuk <span className="font-mono font-bold">172.20.110.20/hrdonline</span>.
+                  Klik tombol di samping untuk mensimulasikan pengiriman laporan sekaligus untuk 4 layanan di Server 172.20.110.20 (HRD Online, Portal, SIPK, MySQL).
                 </p>
               </div>
 
@@ -276,7 +327,7 @@ export function IntranetAgentModal({
                 disabled={simulating}
                 className="px-4 py-2 rounded-xl bg-[#0c519d] hover:bg-[#093d75] text-white font-bold text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-60 flex items-center gap-2"
               >
-                {simulating ? "Mengirim Laporan..." : "Kirim Uji Heartbeat"}
+                {simulating ? "Mengirim Laporan..." : "Kirim Uji Heartbeat Multi-Layanan"}
               </button>
             </div>
 

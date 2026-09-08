@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { recordAgentReport, AgentReportInput, getAllMonitors } from "@/lib/monitors-service";
+import { isPrivateIpOrHost } from "@/lib/checker";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,9 @@ function isAuthorizedAgent(request: Request, body?: { secretKey?: string }): boo
 
 export async function GET() {
   const all = await getAllMonitors();
-  const agentMonitors = all.filter((m) => m.checkSource === "agent");
+  const intranetTargets = all.filter(
+    (m) => m.active && (m.checkSource === "agent" || isPrivateIpOrHost(m.target))
+  );
 
   return NextResponse.json({
     status: "online",
@@ -34,23 +37,40 @@ export async function GET() {
     endpoint: "/api/agent/report",
     method: "POST",
     timestamp: new Date().toISOString(),
-    agentMonitorsCount: agentMonitors.length,
-    agentMonitors: agentMonitors.map((m) => ({
+    targetsCount: intranetTargets.length,
+    targets: intranetTargets.map((m) => ({
       id: m.id,
       name: m.name,
       target: m.target,
-      status: m.status,
+      type: m.type,
+      category: m.category,
+      port: m.port,
+      dbType: m.dbType,
+      method: m.method || "GET",
+      expectedStatusCode: m.expectedStatusCode || 200,
+      timeout: m.timeout || 5000,
       lastChecked: m.lastChecked,
+      status: m.status,
     })),
     documentation: {
       authHeader: "x-agent-secret: <YOUR_SECRET_KEY>",
-      samplePayload: {
-        target: "http://172.20.110.20/hrdonline",
-        name: "HRD Online Intranet",
-        status: "operational",
-        latency: 45,
-        statusCode: 200,
-        error: null,
+      batchPayload: {
+        reports: [
+          {
+            target: "http://172.20.110.20/hrdonline",
+            name: "HRD Online",
+            status: "operational",
+            latency: 35,
+            statusCode: 200,
+          },
+          {
+            target: "http://172.20.110.20/aplikasi-lain",
+            name: "Aplikasi Lain",
+            status: "operational",
+            latency: 42,
+            statusCode: 200,
+          },
+        ],
       },
     },
   });
