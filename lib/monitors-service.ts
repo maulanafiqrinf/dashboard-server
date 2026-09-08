@@ -387,8 +387,10 @@ export async function deleteMonitor(id: string): Promise<boolean> {
 
 function computeUptime(history: CheckHistoryItem[]): number {
   if (!history || history.length === 0) return 100;
-  const upCount = history.filter((h) => h.status === "operational" || h.status === "degraded").length;
-  return Math.round((upCount / history.length) * 1000) / 10;
+  const evaluated = history.filter((h) => h.status !== "pending");
+  if (evaluated.length === 0) return 100;
+  const upCount = evaluated.filter((h) => h.status === "operational" || h.status === "degraded").length;
+  return Math.round((upCount / evaluated.length) * 1000) / 10;
 }
 
 /**
