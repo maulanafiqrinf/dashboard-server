@@ -27,6 +27,7 @@ export function AddEditModal({
   const [expectedStatusCode, setExpectedStatusCode] = useState<number>(200);
   const [timeout, setTimeoutVal] = useState<number>(5000);
   const [checkInterval, setCheckInterval] = useState<number>(1800); // 30 minutes default!
+  const [checkSource, setCheckSource] = useState<"cloud" | "agent">("cloud");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export function AddEditModal({
       setExpectedStatusCode(initialData.expectedStatusCode || 200);
       setTimeoutVal(initialData.timeout || 5000);
       setCheckInterval(initialData.checkInterval || 1800);
+      setCheckSource(initialData.checkSource || "cloud");
     } else {
       setName("");
       setType("http");
@@ -52,6 +54,7 @@ export function AddEditModal({
       setExpectedStatusCode(200);
       setTimeoutVal(5000);
       setCheckInterval(1800);
+      setCheckSource("cloud");
     }
   }, [initialData, isOpen]);
 
@@ -111,6 +114,19 @@ export function AddEditModal({
         setTarget("8.8.8.8");
         setPort("53");
         setTimeoutVal(3000);
+        setCheckSource("cloud");
+        break;
+      case "hrdonline":
+        setName("HRD Online Intranet (172.20.110.20)");
+        setType("http");
+        setCategory("web");
+        setTarget("http://172.20.110.20/hrdonline");
+        setPort("");
+        setMethod("GET");
+        setExpectedStatusCode(200);
+        setTimeoutVal(5000);
+        setCheckInterval(1800);
+        setCheckSource("agent");
         break;
     }
   };
@@ -132,6 +148,7 @@ export function AddEditModal({
         expectedStatusCode: type === "http" ? expectedStatusCode : undefined,
         timeout,
         checkInterval,
+        checkSource,
       });
       onClose();
     } finally {
@@ -175,6 +192,7 @@ export function AddEditModal({
             </div>
             <div className="flex flex-wrap gap-2">
               {[
+                { id: "hrdonline", label: "🏢 HRD Online (172.20.110.20)" },
                 { id: "laragon-mysql", label: "MySQL (3306)" },
                 { id: "postgres", label: "PostgreSQL (5432)" },
                 { id: "redis", label: "Redis (6379)" },
@@ -186,7 +204,11 @@ export function AddEditModal({
                   key={p.id}
                   type="button"
                   onClick={() => applyPreset(p.id)}
-                  className="px-2.5 py-1.5 rounded text-xs font-semibold bg-white hover:bg-[#0c519d] hover:text-white text-slate-700 border border-slate-300 transition-all cursor-pointer shadow-2xs"
+                  className={`px-2.5 py-1.5 rounded text-xs font-semibold border transition-all cursor-pointer shadow-2xs ${
+                    p.id === "hrdonline"
+                      ? "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
+                      : "bg-white hover:bg-[#0c519d] hover:text-white text-slate-700 border-slate-300"
+                  }`}
                 >
                   {p.label}
                 </button>
@@ -333,6 +355,60 @@ export function AddEditModal({
                 />
               </div>
             )}
+          </div>
+
+          {/* Check Source (Cloud vs Agent Intranet) */}
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Sumber Pemeriksaan (Monitoring Origin)
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <label
+                onClick={() => setCheckSource("cloud")}
+                className={`flex items-start gap-2.5 p-3 rounded-lg border cursor-pointer transition-all ${
+                  checkSource === "cloud"
+                    ? "bg-white border-[#0c519d] ring-1 ring-[#0c519d]"
+                    : "bg-white/60 border-slate-200 hover:bg-white"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="checkSource"
+                  checked={checkSource === "cloud"}
+                  onChange={() => setCheckSource("cloud")}
+                  className="mt-0.5"
+                />
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">🌐 Cloud / Langsung</span>
+                  <span className="text-[11px] text-slate-500 block leading-relaxed">
+                    Diperiksa langsung oleh dashboard. Cocok untuk website publik / domain internet.
+                  </span>
+                </div>
+              </label>
+
+              <label
+                onClick={() => setCheckSource("agent")}
+                className={`flex items-start gap-2.5 p-3 rounded-lg border cursor-pointer transition-all ${
+                  checkSource === "agent"
+                    ? "bg-white border-amber-500 ring-1 ring-amber-500"
+                    : "bg-white/60 border-slate-200 hover:bg-white"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="checkSource"
+                  checked={checkSource === "agent"}
+                  onChange={() => setCheckSource("agent")}
+                  className="mt-0.5"
+                />
+                <div>
+                  <span className="text-xs font-bold text-amber-800 block">🏢 Agent Intranet KWSG</span>
+                  <span className="text-[11px] text-slate-500 block leading-relaxed">
+                    Dipantau script lokal kantor. Cocok untuk IP privat (172.20.x.x / 192.168.x.x).
+                  </span>
+                </div>
+              </label>
+            </div>
           </div>
 
           {/* HTTP options */}

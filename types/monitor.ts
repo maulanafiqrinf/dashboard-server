@@ -29,6 +29,7 @@ export interface Monitor {
   lastError?: string;
   uptimePercentage?: number; // 0 - 100
   active: boolean;
+  checkSource?: "cloud" | "agent"; // "cloud" for public internet checks, "agent" for intranet push
   history?: CheckHistoryItem[];
   createdAt: string;
   updatedAt: string;

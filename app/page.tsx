@@ -6,6 +6,7 @@ import { MonitorCard } from "@/components/MonitorCard";
 import { MonitorTableView } from "@/components/MonitorTableView";
 import { AddEditModal } from "@/components/AddEditModal";
 import { IncidentHistoryModal } from "@/components/IncidentHistoryModal";
+import { IntranetAgentModal } from "@/components/IntranetAgentModal";
 import { StatsSummary } from "@/components/StatsSummary";
 import { LoginView } from "@/components/LoginView";
 import { auth } from "@/lib/firebase-client";
@@ -30,7 +31,8 @@ import {
   Globe,
   Database,
   LogOut,
-  UserCheck
+  UserCheck,
+  Radio
 } from "lucide-react";
 
 interface AuthUser {
@@ -74,6 +76,7 @@ export default function DashboardPage() {
   const [isAddEditOpen, setIsAddEditOpen] = useState(false);
   const [editingMonitor, setEditingMonitor] = useState<Monitor | null>(null);
   const [isIncidentOpen, setIsIncidentOpen] = useState(false);
+  const [isAgentModalOpen, setIsAgentModalOpen] = useState(false);
 
   // Live Clock
   const [currentTime, setCurrentTime] = useState<string>("");
@@ -557,6 +560,16 @@ export default function DashboardPage() {
               <span>{checkingAll ? "MEMERIKSA..." : "PERIKSA SEMUA"}</span>
             </button>
 
+            {/* Agent Intranet Button */}
+            <button
+              onClick={() => setIsAgentModalOpen(true)}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors cursor-pointer shadow-2xs"
+              title="Panduan & Script Pemantau Server Intranet KWSG (IP Privat 172.20.x.x)"
+            >
+              <Radio className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+              <span>AGENT INTRANET</span>
+            </button>
+
             {/* Add Target Button (#0c519d) */}
             <button
               onClick={() => {
@@ -761,6 +774,12 @@ export default function DashboardPage() {
         isOpen={isIncidentOpen}
         onClose={() => setIsIncidentOpen(false)}
         incidents={incidents}
+      />
+
+      <IntranetAgentModal
+        isOpen={isAgentModalOpen}
+        onClose={() => setIsAgentModalOpen(false)}
+        onReportSimulated={fetchMonitors}
       />
     </main>
   );

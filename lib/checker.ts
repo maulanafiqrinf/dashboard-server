@@ -284,10 +284,69 @@ export async function checkDns(host: string): Promise<CheckResult> {
 }
 
 /**
+ * Check if a target host is a private intranet IP
+ */
+export function isPrivateIpOrHost(target: string): boolean {
+  try {
+    let host = target;
+    if (target.includes("://")) {
+      const u = new URL(target);
+      host = u.hostname;
+    } else if (target.includes(":")) {
+      host = target.split(":")[0];
+    }
+    if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+    if (/^192\.168\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+    const match172 = host.match(/^172\.(\d{1,3})\.\d{1,3}\.\d{1,3}$/);
+    if (match172) {
+      const octet = parseInt(match172[1], 10);
+      if (octet >= 16 && octet <= 31) return true;
+    }
+    if (host === "localhost" || host.startsWith("127.")) {
+      return Boolean(process.env.VERCEL);
+    }
+  } catch {
+    //
+  }
+  return false;
+}
+
+/**
  * Unified check dispatcher for a monitor instance
  */
 export async function runMonitorCheck(monitor: Monitor): Promise<CheckResult> {
   const timeout = monitor.timeout || 5000;
+
+  // Handle agent / intranet targets
+  if (monitor.checkSource === "agent" || (Boolean(process.env.VERCEL) && isPrivateIpOrHost(monitor.target))) {
+    const lastCheckedTime = monitor.lastChecked ? new Date(monitor.lastChecked).getTime() : 0;
+    const intervalSec = monitor.checkInterval || 1800;
+    const maxAgeMs = intervalSec * 2.5 * 1000;
+    const isStale = lastCheckedTime > 0 && Date.now() - lastCheckedTime > maxAgeMs;
+
+    if (!monitor.lastChecked) {
+      return {
+        status: "pending",
+        latency: 0,
+        details: "Menunggu laporan detak (heartbeat) pertama dari Agent Intranet KWSG",
+      };
+    }
+
+    if (isStale) {
+      return {
+        status: "degraded",
+        latency: monitor.latency || 0,
+        error: `Heartbeat agent intranet terputus (Terakhir diterima: ${new Date(lastCheckedTime).toLocaleTimeString("id-ID")})`,
+      };
+    }
+
+    return {
+      status: monitor.status || "operational",
+      latency: monitor.latency || 0,
+      statusCode: monitor.history?.[monitor.history.length - 1]?.statusCode || 200,
+      details: "Status dilaporkan oleh Agent Intranet KWSG",
+    };
+  }
 
   switch (monitor.type) {
     case "http":

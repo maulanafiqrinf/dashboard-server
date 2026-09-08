@@ -1,5 +1,5 @@
 import { adminDb } from "./firebase-admin";
-import { Monitor, Incident, SystemStats, CheckHistoryItem } from "@/types/monitor";
+import { Monitor, Incident, SystemStats, CheckHistoryItem, MonitorStatus, MonitorCategory, MonitorType } from "@/types/monitor";
 import { runMonitorCheck } from "./checker";
 import fs from "fs";
 import path from "path";
@@ -570,3 +570,87 @@ export function calculateStats(monitors: Monitor[]): SystemStats {
     uptimeAverage,
   };
 }
+
+export interface AgentReportInput {
+  monitorId?: string;
+  target?: string;
+  name?: string;
+  status: MonitorStatus;
+  latency: number;
+  statusCode?: number;
+  error?: string;
+  category?: MonitorCategory;
+  type?: MonitorType;
+}
+
+/**
+ * Record check result pushed from an Intranet Agent
+ */
+export async function recordAgentReport(report: AgentReportInput): Promise<Monitor> {
+  const all = await getAllMonitors();
+  let monitor: Monitor | undefined;
+
+  if (report.monitorId) {
+    monitor = all.find((m) => m.id === report.monitorId);
+  }
+
+  if (!monitor && report.target) {
+    const cleanTarget = report.target.trim().toLowerCase().replace(/\/+$/, "");
+    monitor = all.find((m) => m.target.trim().toLowerCase().replace(/\/+$/, "") === cleanTarget);
+  }
+
+  const now = new Date().toISOString();
+
+  // If monitor doesn't exist yet, auto-create it!
+  if (!monitor) {
+    const target = report.target || "http://172.20.110.20/hrdonline";
+    const newName = report.name || (target.includes("hrdonline") ? "HRD Online Intranet (172.20.110.20)" : `Target Intranet (${target})`);
+
+    monitor = await createMonitor({
+      name: newName,
+      type: report.type || "http",
+      category: report.category || "web",
+      target: target,
+      checkInterval: 1800,
+      timeout: 5000,
+      active: true,
+      checkSource: "agent",
+    });
+  }
+
+  const existingHistory = monitor.history || [];
+  const newHistoryItem: CheckHistoryItem = {
+    timestamp: now,
+    status: report.status,
+    latency: Math.max(0, Math.round(report.latency)),
+    error: report.error,
+    statusCode: report.statusCode,
+  };
+
+  const updatedHistory = [...existingHistory.slice(-29), newHistoryItem];
+  const uptimePercentage = computeUptime(updatedHistory);
+
+  const prevStatus = monitor.status;
+  const newStatus = report.status;
+
+  if (prevStatus !== "down" && newStatus === "down") {
+    await recordIncidentStart(monitor.id, monitor.name, report.error || "Layanan Intranet tidak merespons", now);
+  } else if (prevStatus === "down" && (newStatus === "operational" || newStatus === "degraded")) {
+    await recordIncidentResolved(monitor.id, now);
+  }
+
+  const updates: Partial<Monitor> = {
+    status: newStatus,
+    latency: Math.max(0, Math.round(report.latency)),
+    lastChecked: now,
+    lastError: report.error || undefined,
+    uptimePercentage,
+    history: updatedHistory,
+    checkSource: "agent",
+    updatedAt: now,
+  };
+
+  const updated = await updateMonitor(monitor.id, updates);
+  return updated || { ...monitor, ...updates };
+}
+

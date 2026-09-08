@@ -16,7 +16,8 @@ import {
   Activity,
   ChevronDown,
   ChevronUp,
-  AlertCircle
+  AlertCircle,
+  Radio
 } from "lucide-react";
 
 interface MonitorCardProps {
@@ -196,6 +197,12 @@ export function MonitorCard({
                 <span className="px-2 py-0.5 rounded text-[10px] font-black bg-[#0c519d]/10 text-[#0c519d] border border-[#0c519d]/30 uppercase tracking-wider">
                   {monitor.type === "database" ? monitor.dbType || "DB" : monitor.type}
                 </span>
+                {monitor.checkSource === "agent" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs" title="Dipantau oleh Agent Intranet KWSG">
+                    <Radio className="w-2.5 h-2.5 text-amber-600 animate-pulse" />
+                    AGENT INTRANET
+                  </span>
+                )}
                 <span className="text-[11px] font-bold text-slate-400 capitalize">
                   • {monitor.category}
                 </span>

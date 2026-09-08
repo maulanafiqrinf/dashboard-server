@@ -12,7 +12,8 @@ import {
   Database, 
   Server, 
   Network, 
-  Activity 
+  Activity,
+  Radio
 } from "lucide-react";
 
 interface MonitorTableViewProps {
@@ -116,7 +117,15 @@ export function MonitorTableView({
                         {getCategoryIcon(m.category, m.type)}
                       </div>
                       <div className="truncate max-w-xs sm:max-w-md">
-                        <span className="font-bold text-slate-900 block truncate">{m.name}</span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-bold text-slate-900 truncate">{m.name}</span>
+                          {m.checkSource === "agent" && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-black bg-amber-50 text-amber-800 border border-amber-300">
+                              <Radio className="w-2.5 h-2.5 text-amber-600 animate-pulse" />
+                              AGENT
+                            </span>
+                          )}
+                        </div>
                         <span className="font-mono text-[11px] text-slate-500 truncate block">
                           {m.type === "database"
                             ? `${m.dbType?.toUpperCase()}://${m.target}:${m.port || 3306}`
